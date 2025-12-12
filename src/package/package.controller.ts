@@ -30,11 +30,11 @@ import { User } from '../user/entities/user.entity';
 @ApiBearerAuth()
 @Controller('packages')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.CompanyAdmin)
 export class PackageController {
   constructor(private readonly packageService: PackageService) {}
 
   @Post()
+  @Roles(UserRole.CompanyAdmin, UserRole.SuperAdmin)
   @ApiOperation({ summary: 'Create a new package' })
   @ApiResponse({ status: 201, description: 'Package created successfully' })
   create(
@@ -48,6 +48,7 @@ export class PackageController {
   }
 
   @Get()
+  @Roles(UserRole.CompanyAdmin, UserRole.SuperAdmin)
   @ApiOperation({ summary: 'Get all packages for company' })
   @ApiResponse({ status: 200, description: 'Packages retrieved successfully' })
   findAll(@CurrentUser() user: User) {
@@ -58,6 +59,7 @@ export class PackageController {
   }
 
   @Get(':id')
+  @Roles(UserRole.CompanyAdmin, UserRole.SuperAdmin)
   @ApiOperation({ summary: 'Get a package by ID' })
   @ApiResponse({ status: 200, description: 'Package retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Package not found' })
@@ -69,6 +71,7 @@ export class PackageController {
   }
 
   @Patch(':id')
+  @Roles(UserRole.CompanyAdmin, UserRole.SuperAdmin)
   @ApiOperation({ summary: 'Update a package' })
   @ApiResponse({ status: 200, description: 'Package updated successfully' })
   @ApiResponse({ status: 404, description: 'Package not found' })
@@ -84,6 +87,7 @@ export class PackageController {
   }
 
   @Delete(':id')
+  @Roles(UserRole.CompanyAdmin, UserRole.SuperAdmin)
   @ApiOperation({ summary: 'Delete a package' })
   @ApiResponse({ status: 200, description: 'Package deleted successfully' })
   @ApiResponse({ status: 404, description: 'Package not found' })
@@ -96,6 +100,7 @@ export class PackageController {
   }
 
   @Post(':id/assign')
+  @Roles(UserRole.CompanyAdmin, UserRole.SuperAdmin)
   @ApiOperation({ summary: 'Assign package to users' })
   @ApiResponse({ status: 201, description: 'Package assigned successfully' })
   assignToUsers(
@@ -114,6 +119,7 @@ export class PackageController {
   }
 
   @Get(':id/users')
+  @Roles(UserRole.CompanyAdmin, UserRole.SuperAdmin)
   @ApiOperation({ summary: 'Get users assigned to package' })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully' })
   getPackageUsers(@Param('id') id: string, @CurrentUser() user: User) {
