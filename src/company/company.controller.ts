@@ -53,6 +53,18 @@ export class CompanyController {
     return this.companyService.create(createCompanyDto);
   }
 
+  @Get('public')
+  @ApiOperation({
+    summary: 'Get all companies (public endpoint for registration)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of all companies',
+  })
+  findAllPublic() {
+    return this.companyService.findAll();
+  }
+
   @Get()
   @Roles(UserRole.SuperAdmin)
   @ApiOperation({ summary: 'Get all companies (SuperAdmin only)' })

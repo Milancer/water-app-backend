@@ -42,11 +42,13 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: (this.configService.get<string>('JWT_ACCESS_EXPIRATION') || '15m') as any,
+      expiresIn: (this.configService.get<string>('JWT_ACCESS_EXPIRATION') ||
+        '15m') as any,
     });
 
     const refreshToken = this.jwtService.sign(payload, {
-      expiresIn: (this.configService.get<string>('JWT_REFRESH_EXPIRATION') || '7d') as any,
+      expiresIn: (this.configService.get<string>('JWT_REFRESH_EXPIRATION') ||
+        '7d') as any,
     });
 
     // Save refresh token to database
@@ -73,7 +75,9 @@ export class AuthService {
     };
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<{ accessToken: string }> {
+  async refreshAccessToken(
+    refreshToken: string,
+  ): Promise<{ accessToken: string }> {
     const tokenRecord = await this.refreshTokenRepository.findOne({
       where: { token: refreshToken },
       relations: ['user'],
@@ -96,7 +100,8 @@ export class AuthService {
     };
 
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: (this.configService.get<string>('JWT_ACCESS_EXPIRATION') || '15m') as any,
+      expiresIn: (this.configService.get<string>('JWT_ACCESS_EXPIRATION') ||
+        '15m') as any,
     });
 
     return { accessToken };
@@ -125,5 +130,48 @@ export class AuthService {
   ): Promise<boolean> {
     return bcrypt.compare(plainPassword, hashedPassword);
   }
-}
 
+  async register(registerDto: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    companyId: string;
+  }): Promise<AuthResponseDto> {
+    // Check if email already exists
+    const existingUser = await this.userRepository.findOne({
+      where: { email: registerDto.email },
+    });
+
+    if (existingUser) {
+      throw new UnauthorizedException('Email already exists');
+    }
+
+    // Validate company exists
+    const company = await this.userRepository.manager.findOne('companies', {
+      where: { id: registerDto.companyId },
+    } as any);
+
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+
+    // Hash password
+    const hashedPassword = await this.hashPassword(registerDto.password);
+
+    // Create user with default role 'User'
+    const user = this.userRepository.create({
+      email: registerDto.email,
+      password: hashedPassword,
+      firstName: registerDto.firstName,
+      lastName: registerDto.lastName,
+      companyId: registerDto.companyId,
+      role: 'User' as any,
+    });
+
+    await this.userRepository.save(user);
+
+    // Auto-login: generate tokens
+    return this.login(user);
+  }
+}
