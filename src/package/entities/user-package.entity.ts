@@ -5,6 +5,7 @@ import {
   ManyToOne,
   OneToMany,
   CreateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { Package } from './package.entity';
 import { User } from '../../user/entities/user.entity';
@@ -25,12 +26,14 @@ export class UserPackage {
   userId: string;
 
   @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @Column({ name: 'package_id' })
   packageId: string;
 
   @ManyToOne(() => Package, (pkg) => pkg.userPackages)
+  @JoinColumn({ name: 'package_id' })
   package: Package;
 
   @CreateDateColumn({ name: 'assigned_date' })
