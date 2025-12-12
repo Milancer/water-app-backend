@@ -57,7 +57,7 @@ export class PackageService {
   async findAll(companyId: string): Promise<Package[]> {
     return this.packageRepository.find({
       where: { companyId },
-      relations: ['packageItems', 'packageItems.inventoryItem'],
+      relations: ['packageItems', 'packageItems.inventoryItem', 'userPackages'],
       order: { createdAt: 'DESC' },
     });
   }
