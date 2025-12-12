@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
+import { Inventory } from '../../inventory/entities/inventory.entity';
 
 @Entity('companies')
 export class Company {
@@ -18,6 +19,9 @@ export class Company {
 
   @OneToMany(() => User, (user) => user.company)
   users: User[];
+
+  @OneToMany(() => Inventory, (inventory) => inventory.company)
+  inventoryItems: Inventory[];
 
   @CreateDateColumn()
   createdAt: Date;

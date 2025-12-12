@@ -6,9 +6,11 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CompanyModule } from './company/company.module';
 import { UserModule } from './user/user.module';
+import { InventoryModule } from './inventory/inventory.module';
 import { Company } from './company/entities/company.entity';
 import { User } from './user/entities/user.entity';
 import { RefreshToken } from './auth/entities/refresh-token.entity';
+import { Inventory } from './inventory/entities/inventory.entity';
 
 @Module({
   imports: [
@@ -20,7 +22,9 @@ import { RefreshToken } from './auth/entities/refresh-token.entity';
         const password = configService.get<string>('DB_PASSWORD');
 
         if (!username || !password) {
-          throw new Error(`❌ ENV NOT LOADED. username=${username}, password=${password}`);
+          throw new Error(
+            `❌ ENV NOT LOADED. username=${username}, password=${password}`,
+          );
         }
 
         return {
@@ -30,7 +34,7 @@ import { RefreshToken } from './auth/entities/refresh-token.entity';
           username,
           password,
           database: configService.get('DB_DATABASE'),
-          entities: [Company, User, RefreshToken],
+          entities: [Company, User, RefreshToken, Inventory],
           synchronize: true,
         };
       },
@@ -40,9 +44,9 @@ import { RefreshToken } from './auth/entities/refresh-token.entity';
     AuthModule,
     CompanyModule,
     UserModule,
+    InventoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
-
+export class AppModule {}
