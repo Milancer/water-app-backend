@@ -33,6 +33,40 @@ import { User } from '../user/entities/user.entity';
 export class PackageController {
   constructor(private readonly packageService: PackageService) {}
 
+  // Mobile User Endpoints - Users can view and redeem their assigned packages
+  // IMPORTANT: These must be defined BEFORE the generic :id routes to prevent route conflicts
+  @Get('my-packages')
+  @Roles(UserRole.User, UserRole.CompanyAdmin, UserRole.SuperAdmin)
+  @ApiOperation({ summary: 'Get my assigned packages' })
+  @ApiResponse({ status: 200, description: 'Packages retrieved successfully' })
+  getMyPackages(@CurrentUser() user: User) {
+    return this.packageService.getMyPackages(user.id);
+  }
+
+  @Get('user-package/:id')
+  @Roles(UserRole.User, UserRole.CompanyAdmin, UserRole.SuperAdmin)
+  @ApiOperation({ summary: 'Get user package details' })
+  @ApiResponse({
+    status: 200,
+    description: 'Package details retrieved successfully',
+  })
+  getUserPackageDetails(@Param('id') id: string, @CurrentUser() user: User) {
+    return this.packageService.getUserPackageDetails(id, user.id);
+  }
+
+  @Post('user-package/:id/redeem')
+  @Roles(UserRole.User, UserRole.CompanyAdmin, UserRole.SuperAdmin)
+  @ApiOperation({ summary: 'Redeem an item from package' })
+  @ApiResponse({ status: 201, description: 'Item redeemed successfully' })
+  redeemItem(
+    @Param('id') id: string,
+    @Body() redeemItemDto: any,
+    @CurrentUser() user: User,
+  ) {
+    return this.packageService.redeemItem(id, redeemItemDto, user.id);
+  }
+
+  // Admin Endpoints - Package management
   @Post()
   @Roles(UserRole.CompanyAdmin, UserRole.SuperAdmin)
   @ApiOperation({ summary: 'Create a new package' })
@@ -127,37 +161,5 @@ export class PackageController {
       throw new ForbiddenException('User must belong to a company');
     }
     return this.packageService.getPackageUsers(id, user.companyId);
-  }
-
-  // Mobile User Endpoints
-  @Get('my-packages')
-  @Roles(UserRole.User, UserRole.CompanyAdmin, UserRole.SuperAdmin)
-  @ApiOperation({ summary: 'Get my assigned packages' })
-  @ApiResponse({ status: 200, description: 'Packages retrieved successfully' })
-  getMyPackages(@CurrentUser() user: User) {
-    return this.packageService.getMyPackages(user.id);
-  }
-
-  @Get('user-package/:id')
-  @Roles(UserRole.User, UserRole.CompanyAdmin, UserRole.SuperAdmin)
-  @ApiOperation({ summary: 'Get user package details' })
-  @ApiResponse({
-    status: 200,
-    description: 'Package details retrieved successfully',
-  })
-  getUserPackageDetails(@Param('id') id: string, @CurrentUser() user: User) {
-    return this.packageService.getUserPackageDetails(id, user.id);
-  }
-
-  @Post('user-package/:id/redeem')
-  @Roles(UserRole.User, UserRole.CompanyAdmin, UserRole.SuperAdmin)
-  @ApiOperation({ summary: 'Redeem an item from package' })
-  @ApiResponse({ status: 201, description: 'Item redeemed successfully' })
-  redeemItem(
-    @Param('id') id: string,
-    @Body() redeemItemDto: any,
-    @CurrentUser() user: User,
-  ) {
-    return this.packageService.redeemItem(id, redeemItemDto, user.id);
   }
 }

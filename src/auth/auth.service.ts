@@ -24,7 +24,10 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.userRepository.findOne({ where: { email } });
+    // Case-insensitive email lookup for better UX
+    const user = await this.userRepository.findOne({
+      where: { email: email.toLowerCase() },
+    });
 
     if (user && (await this.comparePasswords(password, user.password))) {
       return user;
@@ -138,9 +141,9 @@ export class AuthService {
     lastName: string;
     companyId: string;
   }): Promise<AuthResponseDto> {
-    // Check if email already exists
+    // Check if email already exists (case-insensitive)
     const existingUser = await this.userRepository.findOne({
-      where: { email: registerDto.email },
+      where: { email: registerDto.email.toLowerCase() },
     });
 
     if (existingUser) {
@@ -159,9 +162,9 @@ export class AuthService {
     // Hash password
     const hashedPassword = await this.hashPassword(registerDto.password);
 
-    // Create user with default role 'User'
+    // Create user with default role 'User' and normalized email
     const user = this.userRepository.create({
-      email: registerDto.email,
+      email: registerDto.email.toLowerCase(),
       password: hashedPassword,
       firstName: registerDto.firstName,
       lastName: registerDto.lastName,
