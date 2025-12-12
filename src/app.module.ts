@@ -7,10 +7,15 @@ import { AuthModule } from './auth/auth.module';
 import { CompanyModule } from './company/company.module';
 import { UserModule } from './user/user.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { PackageModule } from './package/package.module';
 import { Company } from './company/entities/company.entity';
 import { User } from './user/entities/user.entity';
 import { RefreshToken } from './auth/entities/refresh-token.entity';
 import { Inventory } from './inventory/entities/inventory.entity';
+import { Package } from './package/entities/package.entity';
+import { PackageItem } from './package/entities/package-item.entity';
+import { UserPackage } from './package/entities/user-package.entity';
+import { Redemption } from './package/entities/redemption.entity';
 
 @Module({
   imports: [
@@ -34,7 +39,16 @@ import { Inventory } from './inventory/entities/inventory.entity';
           username,
           password,
           database: configService.get('DB_DATABASE'),
-          entities: [Company, User, RefreshToken, Inventory],
+          entities: [
+            Company,
+            User,
+            RefreshToken,
+            Inventory,
+            Package,
+            PackageItem,
+            UserPackage,
+            Redemption,
+          ],
           synchronize: true,
         };
       },
@@ -45,6 +59,7 @@ import { Inventory } from './inventory/entities/inventory.entity';
     CompanyModule,
     UserModule,
     InventoryModule,
+    PackageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

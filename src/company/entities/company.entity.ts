@@ -23,6 +23,9 @@ export class Company {
   @OneToMany(() => Inventory, (inventory) => inventory.company)
   inventoryItems: Inventory[];
 
+  @OneToMany('Package', 'company')
+  packages: any[];
+
   @CreateDateColumn()
   createdAt: Date;
 
